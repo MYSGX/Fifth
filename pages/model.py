@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 
 # Load the CSV file
-csv_file = 'Streamlit/modelscores.csv'  # Path to your CSV file
+csv_file = 'modelscores.csv'  # Path to your CSV file
 df = pd.read_csv(csv_file)
 
 # Remove leading/trailing whitespace from column names
