@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 
 # Load the CSV file
-csv_file = 'modelscores.csv'  # Path to your CSV file
+csv_file = 'Streamlit/modelscores.csv'  # Path to your CSV file
 df = pd.read_csv(csv_file)
 
 # Remove leading/trailing whitespace from column names
@@ -95,4 +95,8 @@ if selected_ticker:
         
         # Display data for name, sector, industry, and market cap
         st.write("### Company Information:")
-        company_info = ticker_data[['Name', 'Sector', 'Industry', 'Market cap']].tra
+        company_info = ticker_data[['Name', 'Sector', 'Industry', 'Market cap']].transpose()
+        st.write(company_info)
+        
+    else:
+        st.write("Ticker not found!")
