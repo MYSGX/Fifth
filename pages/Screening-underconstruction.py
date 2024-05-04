@@ -2,29 +2,19 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-# Function to display inputs in a table
-def display_inputs_in_table(columns_to_multiply, multipliers):
-    st.sidebar.subheader("Multipliers for each column:")
-    df_inputs = pd.DataFrame({'Column': columns_to_multiply, 'Multiplier': [multipliers.get(col, 1.0) for col in columns_to_multiply]})
-    st.sidebar.table(df_inputs)
-
-# Function to reset multipliers to default values
-def reset_multipliers(default_multipliers):
-    st.session_state.input_values = default_multipliers.copy()
-
 # Main function to calculate scores and display results
 def main():
     st.set_page_config(page_title='Ticker Scores')
     st.header("Ticker Scores")
 
     # Load the CSV file
-    csv_file = 'software.csv'  # Path to your CSV file
+    csv_file = 'Streamlit/software.csv'  # Path to your CSV file
     df = pd.read_csv(csv_file)
 
     # Remove leading and trailing whitespaces from column names
     df.columns = df.columns.str.strip()
 
-    # Create input fields for each column multiplier in sidebar
+    # Create input fields for each column multiplier
     columns_to_multiply = [
         'Organic growth', 'EBITDA growth', 'Sales est change- 4 months',
         'EBITDA est change', 'Gross margin', 'EBITDA margin',
@@ -34,23 +24,18 @@ def main():
     # Initialize default multipliers and input values
     default_multipliers = {column: 1.0 for column in columns_to_multiply}
     if 'multipliers' not in st.session_state:
-        st.session_state.multipliers = default_multipliers
-        st.session_state.input_values = default_multipliers.copy()
+        st.session_state.multipliers = default_multipliers.copy()
+        st.session_state.input_values = pd.DataFrame({'Column': columns_to_multiply, 'Multiplier': [default_multipliers.get(col, 1.0) for col in columns_to_multiply]})
 
-    # Reset multipliers if requested
-    reset_button = st.sidebar.button("Reset Multipliers")
-    if reset_button:
-        reset_multipliers(default_multipliers)
-        st.experimental_rerun()
-
-    # Display input fields for multipliers
-    st.sidebar.subheader("Please input multipliers for each column:")
-    for column in columns_to_multiply:
-        default_multiplier = st.session_state.input_values.get(column, 1.0)
-        st.session_state.input_values[column] = st.sidebar.number_input(f"{column}", min_value=0.0, step=0.1, value=default_multiplier, key=column)
+    # Display editable table for multipliers
+    st.subheader("Edit Multipliers:")
+    edited_multipliers = st.data_editor(st.session_state.input_values)
+    st.session_state.input_values = edited_multipliers
 
     # Apply multipliers to the DataFrame
-    for column, multiplier in st.session_state.input_values.items():
+    for _, row in edited_multipliers.iterrows():
+        column = row['Column']
+        multiplier = row['Multiplier']
         df[column] = df[column] * multiplier
 
     # Calculate the average score for each ticker
@@ -69,9 +54,6 @@ def main():
     st.subheader("Lower scores better")
     st.write(sorted_ticker_scores)
 
-    # Display inputs in a table in the sidebar
-    display_inputs_in_table(columns_to_multiply, st.session_state.input_values)
-
     # Display the bar chart for scores with a reversed sequential green color scale
     st.subheader("Bar Chart for Scores (Sequential Greens - Darker on Left)")
     fig = px.bar(sorted_ticker_scores, x='Ticker', y='Score', color='Score', labels={'Score': 'Average Score'},
@@ -80,8 +62,4 @@ def main():
     st.plotly_chart(fig)
 
     # Display the data from the CSV file at the bottom
-    st.subheader("Data:")
-    st.write(df)
-
-if __name__ == "__main__":
-    main()
+    st.subheader("
