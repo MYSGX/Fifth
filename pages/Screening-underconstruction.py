@@ -61,5 +61,9 @@ def main():
     fig.update_layout(xaxis_title="Ticker", yaxis_title="Average Score")
     st.plotly_chart(fig)
 
-    # Display the data from the CSV file at the bottom
-    st.subheader("
+# Display the data from the CSV file at the bottom
+    st.subheader("Data:")
+    st.write(df)
+
+if __name__ == "__main__":
+    main()
