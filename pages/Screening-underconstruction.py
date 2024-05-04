@@ -8,7 +8,7 @@ def main():
     st.header("Ticker Scores")
 
     # Load the CSV file
-    csv_file = 'Streamlit/software.csv'  # Path to your CSV file
+    csv_file = 'software.csv'  # Path to your CSV file
     df = pd.read_csv(csv_file)
 
     # Remove leading and trailing whitespaces from column names
